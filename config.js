@@ -1,12 +1,11 @@
-// Token kau dipecahkan kepada bahagian kecil
-const part1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.";
-const part2 = "eyJpYXQiOjE3NjMxMzA0NTQsImlzcyI6IlZSIiwiZXhwIjoxNzYzMTU5NDAwLCJ3";
-const part3 = "bXZlciI6Mywid21pZGZtdCI6ImFzY2lpIiwid21pZHR5cCI6MSwid21rZXl2ZXIiOjMsIndtdG1";
-const part4 = "pZHZlciI6NCwid21pZGxlbiI6NTEyLCJ3bW9waWQiOjMyLCJ3bWlkIjoiMj";
-const part5 = "Y2NzkxYjEtZDk1Zi00MjI1LWE3YWQtZTM3YjJjNmE0YzdjIiwiZmlsdGVyIjoi";
-const part6 = "KHR5cGU9PVwidmlkZW9cIiYmRGlzcGxheUhlaWdodDw9M";
-const part7 = "jE2MCl8fCh0eXBlPT1cImF1ZGlvXCImJmZvdXJDQyE9XCJhYy0zXCIpf";
-const part8 = "HwodHlwZSE9XCJ2aWRlb1wiJiZ0eXBlIT1cImF1ZGlvXCIpIiwicGF0d";
-const part9 = "GVybiI6IjUwOTkifQ.ZJlMpwDSmxhjTIcHUsgSW6DwzJtW5-4Xp42Dx5ZsJVo";
+// config.js (put at root)
+// >>> BRO: isi token kau di sini. Split/obfuscate if you want.
+// Example pattern: pieces combined into self.SOOKA_TOKEN
 
-self.SOOKA_TOKEN = part1+part2+part3+part4+part5+part6+part7+part8+part9;
+const p1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.";
+const p2 = "eyJpYXQiOjE3NjMxMzA0NTQsImlzcyI6IlZSIiwiZXhwIjoxNzYzMTU5NDAwLCJ3bXZlciI6Mywid21pZGZtdCI6ImFzY2lpIiwid21pZHR5cCI6MSwid21rZXl2ZXIiOjMsIndtdG1pZHZlciI6NCwid21pZGxlbiI6NTEyLCJ3bW9waWQiOjMyLCJ3bWlkIjoiMjY2NzkxYjEtZDk1Zi00MjI1LWE3YWQtZTM3YjJjNmE0YzdjIiwiZmlsdGVyIjoiKHR5cGU9PVwidmlkZW9cIiYmRGlzcGxheUhlaWdodDw9MjE2MCl8fCh0eXBlPT1cImF1ZGlvXCImJmZvdXJDQyE9XCJhYy0zXCIpfHwodHlwZSE9XCJ2aWRlb1wiJiZ0eXBlIT1cImF1ZGlvXCIpIiwicGF0dGVybiI6IjUwOTkifQ.ZJlMpwDSmxhjTIcHUsgSW6DwzJtW5-4Xp42Dx5ZsJVo";
+// ... add more parts if you want
+self.SOOKA_TOKEN = (p1 + p2); // <<< BRO: replace with your real token parts
+
+// Note: This file is loaded by the service worker via importScripts('/config.js')
+// Keep it at site root (https://www.tvmalaysia.live/config.js)
