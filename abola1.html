@@ -40,7 +40,8 @@
       // ===========================
       // Replace ORIGINAL_MPD with your actual MPD link (DO NOT put token here)
       const ORIGINAL_MPD = 'https://l01.dp.sooka.my/5099/linear/index.mpd';
-      const proxied = `/sooka-mpd?url=${encodeURIComponent(ORIGINAL_MPD)}`;
+      const proxied = `/sw-proxy/mpd?url=${encodeURIComponent(ORIGINAL)}`;
+player.load(proxied);
 
       try {
         await player.load(proxied);

@@ -5,8 +5,8 @@
 importScripts('/config.js'); // loads self.SOOKA_TOKEN — DO NOT hardcode token here in chat
 
 const SOOKA_HOST_PART = 'sooka.my'; // match origin hostname substring
-const PROXY_MPD_PATH = '/sooka-mpd';   // Shaka will request this
-const PROXY_GENERIC = '/sooka-proxy'; // Shaka will request segments/keys here
+const PROXY_MPD_PATH = '/sw-proxy/mpd';   // Shaka will request this
+const PROXY_GENERIC = '/sw-proxy/proxy'; // Shaka will request segments/keys here
 
 self.addEventListener('install', event => {
   // activate immediately
