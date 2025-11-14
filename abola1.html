@@ -1,55 +1,55 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Arena Bola (Test)</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.6/shaka-player.compiled.js"></script>
-  <style>body{margin:0;background:#000}video{width:100%;height:auto}</style>
-</head>
-<body>
-  <video id="video" controls autoplay playsinline></video>
+    <meta charset="utf-8">
+    <title>Generic Stream Player with Shaka + SW</title>
 
-  <script>
-    // REGISTER SERVICE WORKER (root path)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' })
-        .then(reg => console.log('Service Worker Registered', reg))
-        .catch(err => console.error('SW register failed', err));
-    } else {
-      console.warn('Service Worker not supported');
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.6/shaka-player.compiled.js"></script>
 
-    // Shaka player
-    (async () => {
-      const video = document.getElementById('video');
-      const player = new shaka.Player(video);
-
-      // ===========================
-      // CLEARKEY PLACEHOLDER (GENERIC)
-      // ===========================
-      player.configure({
-        drm: {
-          clearKeys: {
-            "57833c900c4c437f82daf6785eb6ef36":"7bf4663e43cdc277b4ae18219c81d2a1","fb06bb8266fb4a998e7c4e7e90461556":"52242587d8106c4b3ed596c7a56b4e28"
-          }
+    <script>
+        // =====================================================
+        // REGISTER SERVICE WORKER
+        // =====================================================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('Service Worker Registered'));
         }
-      });
+    </script>
+</head>
 
-      // ===========================
-      // LOADING: use our MPD proxy path
-      // ===========================
-      // Replace ORIGINAL_MPD with your actual MPD link (DO NOT put token here)
-      const ORIGINAL_MPD = 'https://l01.dp.sooka.my/5099/linear/index.mpd';
-      const proxied = `/sw-proxy/mpd?url=${encodeURIComponent(ORIGINAL)}`;
-player.load(proxied);
+<body style="margin:0;background:#000;">
+    <video id="video" controls autoplay style="width:100%;"></video>
 
-      try {
-        await player.load(proxied);
-        console.log('Stream Loaded');
-      } catch (e) {
-        console.error('Player Error', e);
-      }
-    })();
-  </script>
+    <script>
+        const video = document.getElementById('video');
+        const player = new shaka.Player(video);
+
+        // =====================================================
+        // CLEARKEY TEMPLATE (BRO ISI SENDIRI DI SINI)
+        // =====================================================
+
+        player.configure({
+            drm: {
+                clearKeys: {
+                    "57833c900c4c437f82daf6785eb6ef36":"7bf4663e43cdc277b4ae18219c81d2a1","fb06bb8266fb4a998e7c4e7e90461556":"52242587d8106c4b3ed596c7a56b4e28"
+                }
+            }
+        });
+
+        // =====================================================
+        // STREAM URL TEMPLATE
+        // =====================================================
+
+        const STREAM_MPD = "https://l01.dp.sooka.my/5099/linear/index.mpd";
+        // Bro isi sendiri nanti
+
+        // =====================================================
+        // LOAD THE STREAM
+        // =====================================================
+
+        player.load(STREAM_MPD)
+            .then(() => console.log("Stream Loaded"))
+            .catch(err => console.error("Player Error:", err));
+    </script>
 </body>
 </html>
