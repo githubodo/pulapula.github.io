@@ -2,7 +2,7 @@
 // SERVICE WORKER — GENERIC TEMPLATE
 // =========================================
 
-importScripts('/config.js'); // Token combined di sini
+importScripts('/configria.js'); // Token combined di sini
 
 // Domain stream yang perlu intercept
 const TARGET_HOST = "sooka.my"; 
