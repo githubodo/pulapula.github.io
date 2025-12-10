@@ -1,98 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Astro Ria Live - TVMalaysia</title>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RIA test player</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.8.6/shaka-player.compiled.js"></script>
-
   <style>
-    body {
-      margin: 0;
-      background: #000;
-      overflow: hidden;
-    }
-    #videoContainer {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-      background: #000;
-    }
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background-color: #000;
-    }
-
-    #watermark {
-      position: absolute;
-      bottom: 15px;
-      right: 15px;
-      color: white;
-      padding: 6px 12px;
-      background: rgba(0,0,0,0.5);
-      border-radius: 5px;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 20;
-    }
+    html,body{height:100%;margin:0;background:#000}
+    #video{width:100%;height:100%;object-fit:contain;background:#000}
+    #watermark{position:absolute;right:12px;bottom:12px;color:#fff;background:rgba(0,0,0,0.4);padding:6px;border-radius:6px}
   </style>
 </head>
-
 <body>
-
-<div id="videoContainer">
-  <video id="video" autoplay controls></video>
-  <div id="watermark" onclick="window.open('https://www.tvmalaysia.live', '_blank')">
-    TVMalaysia.live
+  <div style="position:relative;height:100vh">
+    <video id="video" autoplay controls></video>
+    <div id="watermark">TVMalaysia.live</div>
   </div>
-</div>
 
 <script>
-  async function initPlayer() {
-
+  async function init() {
     shaka.polyfill.installAll();
-
     if (!shaka.Player.isBrowserSupported()) {
-      alert("Browser tidak support Shaka Player.");
+      alert("Browser not supported");
       return;
     }
 
-    const video = document.getElementById("video");
+    const video = document.getElementById('video');
     const player = new shaka.Player(video);
 
-    // Log error message
-    player.addEventListener("error", (err) => {
-      console.error("Shaka Error:", err.detail);
+    // Shaka error logging
+    player.addEventListener('error', (e) => {
+      console.error("Shaka error:", e.detail);
     });
 
-    // Worker endpoints
-    const manifestUrl = "https://get.tvmalaysia.live/ria/index.mpd";
-    const licenseUrl  = "https://get.tvmalaysia.live/ria/license";
-
-    // DRM Setup
+    // Configure DRM: point ClearKey license to our worker
     player.configure({
       drm: {
         servers: {
-          "org.w3.clearkey": licenseUrl
-        }
+          // worker's license endpoint
+          "org.w3.clearkey": window.location.origin + "/ria/license"
+        },
+        // don't provide clearKeys here; license endpoint will return keys
+      },
+      streaming: {
+        rebufferingGoal: 10,
+        bufferingGoal: 30,
+        // reduce default segment request concurrency if origin dislikes many parallel requests
+        concurrentSegmentDownloads: 4
+      },
+      manifest: {
+        retryParameters: { maxAttempts: 3, baseDelay: 1000 }
       }
     });
 
+    const manifestUrl = window.location.origin + "/ria/index.mpd"; // worker MPD URL
+
     try {
-      console.log("Loading RIA stream...");
+      console.log("Loading manifest:", manifestUrl);
       await player.load(manifestUrl);
-      console.log("RIA is now LIVE!");
-    } 
-    catch (err) {
-      console.error("LOAD ERROR:", err);
+      console.log("Loaded manifest — playback should start if segments & license OK");
+    } catch (err) {
+      console.error("PLAYER LOAD ERROR", err);
     }
   }
 
-  document.addEventListener("DOMContentLoaded", initPlayer);
+  document.addEventListener('DOMContentLoaded', init);
 </script>
-
 </body>
 </html>
