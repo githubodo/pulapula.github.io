@@ -3,85 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test RIA Proxy Player</title>
+  <title>Astro Ria Live - TVMalaysia</title>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.8.6/shaka-player.compiled.js"></script>
 
   <style>
-    body { margin: 0; background: #000; overflow: hidden; }
-    #videoContainer { width: 100vw; height: 100vh; position: relative; }
-    video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+    body {
+      margin: 0;
+      background: #000;
+      overflow: hidden;
+    }
+    #videoContainer {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background: #000;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background-color: #000;
+    }
+
     #watermark {
-      position: absolute; bottom: 15px; right: 15px;
-      color: #fff; opacity: 0.7; font-size: 14px;
-      background: rgba(0,0,0,0.4); padding: 5px 10px; border-radius: 4px;
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      color: white;
+      padding: 6px 12px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 20;
     }
   </style>
 </head>
 
 <body>
+
 <div id="videoContainer">
-  <video id="video" autoplay controls muted></video>
-  <div id="watermark">TVMalaysia.live</div>
+  <video id="video" autoplay controls></video>
+  <div id="watermark" onclick="window.open('https://www.tvmalaysia.live', '_blank')">
+    TVMalaysia.live
+  </div>
 </div>
 
 <script>
-async function initPlayer() {
+  async function initPlayer() {
 
-  shaka.polyfill.installAll();
+    shaka.polyfill.installAll();
 
-  if (!shaka.Player.isBrowserSupported()) {
-    alert("Browser tidak support Shaka Player");
-    return;
+    if (!shaka.Player.isBrowserSupported()) {
+      alert("Browser tidak support Shaka Player.");
+      return;
+    }
+
+    const video = document.getElementById("video");
+    const player = new shaka.Player(video);
+
+    // Log error message
+    player.addEventListener("error", (err) => {
+      console.error("Shaka Error:", err.detail);
+    });
+
+    // Worker endpoints
+    const manifestUrl = "https://get.tvmalaysia.live/ria/index.mpd";
+    const licenseUrl  = "https://get.tvmalaysia.live/ria/license";
+
+    // DRM Setup
+    player.configure({
+      drm: {
+        servers: {
+          "org.w3.clearkey": licenseUrl
+        }
+      }
+    });
+
+    try {
+      console.log("Loading RIA stream...");
+      await player.load(manifestUrl);
+      console.log("RIA is now LIVE!");
+    } 
+    catch (err) {
+      console.error("LOAD ERROR:", err);
+    }
   }
 
-  const video = document.getElementById("video");
-  const player = new shaka.Player(video);
-
-  // Debug
-  player.addEventListener("error", e => console.error("Shaka Error:", e.detail));
-
-  const manifestUrl = "https://get.tvmalaysia.live/ria/index.mpd";
-
-  // ============================================================
-  // 🔥 FIX UTAMA: FORCE CLEARKEY ONLY
-  // ============================================================
-
-  player.configure({
-    drm: {
-      servers: {
-        'org.w3.clearkey': 'https://get.tvmalaysia.live/ria/license'
-      },
-
-      // Tikam mati Widevine & PlayReady supaya Shaka tak sentuh langsung
-      advanced: {
-        'com.widevine.alpha': { videoRobustness: '', audioRobustness: '' },
-        'com.microsoft.playready': { videoRobustness: '', audioRobustness: '' }
-      },
-
-      // Jangan auto detect DRM lain
-      initDataTransform: null,
-      initData: {}
-    },
-
-    // Elak Shaka auto pilih codec pelik → stability improved
-    preferredAudioCodecs: ['mp4a.40.5'],
-    preferredVideoCodecs: ['avc1.4D4015', 'avc1.4D4029', 'avc1.640029']
-  });
-
-  // ============================================================
-  // 🚀 LOAD STREAM
-  // ============================================================
-
-  try {
-    await player.load(manifestUrl);
-    console.log("RIA Stream Loaded!");
-  } catch (err) {
-    console.error("LOAD ERROR", err);
-  }
-
-}
-
-document.addEventListener("DOMContentLoaded", initPlayer);
+  document.addEventListener("DOMContentLoaded", initPlayer);
 </script>
 
 </body>
